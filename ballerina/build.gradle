@@ -85,10 +85,6 @@ clean {
     delete 'build'
 }
 
-
 build.dependsOn ":aws.redshiftdata-native:build"
 test.dependsOn ":aws.redshiftdata-native:build"
 build.dependsOn copyToLib
-
-
-
