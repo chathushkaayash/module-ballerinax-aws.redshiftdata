@@ -5,6 +5,6 @@ version = "@toml.version@"
 authors = ["Ballerina"]
 keywords = ["Data Warehouse", "Columnar Storage", "Cost/Paid", "vendor/aws"]
 repository = "https://github.com/ballerina-platform/module-ballerinax-aws.redshiftdata"
-#icon = "icon.png"
+icon = "icon.png"
 license = ["Apache-2.0"]
 distribution = "2201.10.2"
