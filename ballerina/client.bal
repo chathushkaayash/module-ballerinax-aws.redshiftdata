@@ -22,7 +22,7 @@ public isolated client class Client {
     # Initializes AWS Redshift Data API client.
     #
     # + connectionConfig - Configurations related to redshift data api
-    # + return - Possible error when creating the client
+    # + return - The `redshiftdata:Client` or `redshiftdata:Error` if the initialization fails
     public isolated function init(*ConnectionConfig connectionConfig) returns Error? {
         return self.externInit(connectionConfig);
     }
