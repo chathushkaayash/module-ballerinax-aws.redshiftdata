@@ -68,4 +68,16 @@ public class NativeClientAdaptor {
             return AwsBasicCredentials.create(authConfig.accessKeyId(), authConfig.secretAccessKey());
         }
     }
+
+    public static Object close(BObject bClient) {
+        RedshiftDataClient nativeClient = (RedshiftDataClient) bClient.getNativeData(NATIVE_CLIENT);
+        try {
+            nativeClient.close();
+        } catch (Exception e) {
+            String errorMsg = String.format("Error occurred while closing the Redshift client: %s",
+                    e.getMessage());
+            return CommonUtils.createError(errorMsg, e);
+        }
+        return null;
+    }
 }

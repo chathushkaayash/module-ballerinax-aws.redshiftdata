@@ -32,5 +32,15 @@ public isolated client class Client {
         name: "init",
         'class: "io.ballerina.lib.aws.redshiftdata.NativeClientAdaptor"
     } external;
+        
+    # Closes the AWS Redshift Data API client.
+    # ```ballerina
+    # check redshift->close();
+    # ```
+    # 
+    # + return - A `redshiftdata:Error` if there is an error while closing the client resources or else nil
+    remote function close() returns Error? = @java:Method {
+        'class: "io.ballerina.lib.aws.redshiftdata.NativeClientAdaptor"
+    } external;
 
 }
