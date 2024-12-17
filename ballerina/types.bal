@@ -21,14 +21,10 @@ import ballerina/sql;
 # + authConfig - The authentication configurations for the redshift data api
 # + databaseConfig - The database configurations
 # This can be overridden in the individual execute and batchExecute requests.
-# + timeout - The timeout to be used getting the query results and execution results in `seconds`
-# + pollingInterval - The polling interval to be used getting the query results and execution results in `seconds`
 public type ConnectionConfig record {|
     Region region;
     AuthConfig authConfig;
     DatabaseConfig databaseConfig;
-    decimal timeout = 30;
-    decimal pollingInterval = 5;
 |};
 
 # An Amazon Web Services region that hosts a set of Amazon services.
