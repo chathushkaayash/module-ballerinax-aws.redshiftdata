@@ -21,6 +21,9 @@ package io.ballerina.lib.aws.redshiftdata;
 import io.ballerina.runtime.api.utils.StringUtils;
 import io.ballerina.runtime.api.values.BString;
 
+/**
+ * Represents the constants related to Ballerina AWS Redshift Data Connector.
+ */
 public interface Constants {
     String NATIVE_CLIENT = "nativeClient";
     String NATIVE_DATABASE_CONFIG = "nativeDatabaseConfig";

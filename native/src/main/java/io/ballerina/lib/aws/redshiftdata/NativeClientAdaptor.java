@@ -24,11 +24,13 @@ import io.ballerina.runtime.api.values.*;
 import software.amazon.awssdk.auth.credentials.*;
 import software.amazon.awssdk.services.redshiftdata.RedshiftDataClient;
 
+/**
+ * Representation of {@link software.amazon.awssdk.services.redshiftdata.RedshiftDataClient} with
+ * utility methods to invoke as inter-op functions.
+ */
 public class NativeClientAdaptor {
     private static final String NATIVE_CLIENT = Constants.NATIVE_CLIENT;
     private static final String NATIVE_DATABASE_CONFIG = Constants.NATIVE_DATABASE_CONFIG;
-
-    DatabaseConfig databaseConfig;
 
     private NativeClientAdaptor() {
     }

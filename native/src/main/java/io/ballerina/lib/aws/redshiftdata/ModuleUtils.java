@@ -21,6 +21,9 @@ package io.ballerina.lib.aws.redshiftdata;
 import io.ballerina.runtime.api.Environment;
 import io.ballerina.runtime.api.Module;
 
+/**
+ * Module utils for the Ballerina AWS Redshift Data Client to obtain the module info in the init.
+ */
 public class ModuleUtils {
     private static Module module;
 
