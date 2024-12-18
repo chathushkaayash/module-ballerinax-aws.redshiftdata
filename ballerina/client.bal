@@ -39,7 +39,7 @@ public isolated client class Client {
     # + sqlStatement - The SQL statement to be executed
     # + databaseConfig - The database configurations.
     # + return - The statementId that can be used to retrieve the results or an error
-    remote function executeStatement(sql:ParameterizedQuery sqlStatement, DatabaseConfig? databaseConfig = ())
+    remote isolated function executeStatement(sql:ParameterizedQuery sqlStatement, DatabaseConfig? databaseConfig = ())
     returns string|Error = @java:Method {
         'class: "io.ballerina.lib.aws.redshiftdata.NativeClientAdaptor"
     } external;
@@ -49,7 +49,7 @@ public isolated client class Client {
     # + sqlStatements - The SQL statements to be executed
     # + databaseConfig - The database configurations.
     # + return - The statementIds that can be used to retrieve the results or an error
-    remote function batchExecuteStatement(sql:ParameterizedQuery[] sqlStatements, DatabaseConfig? databaseConfig = ())
+    remote isolated function batchExecuteStatement(sql:ParameterizedQuery[] sqlStatements, DatabaseConfig? databaseConfig = ())
     returns string[]|Error = @java:Method {
         'class: "io.ballerina.lib.aws.redshiftdata.NativeClientAdaptor"
     } external;
