@@ -40,7 +40,16 @@ public isolated client class Client {
     # + databaseConfig - The database configurations.
     # + return - The statementId that can be used to retrieve the results or an error
     remote isolated function executeStatement(sql:ParameterizedQuery sqlStatement, DatabaseConfig? databaseConfig = ())
+    returns string|Error {
+        if sqlStatement.strings.length() == 0 {
+            return error Error("SQL statement cannot be empty");
+        }
+        return self.externExecuteStatement(sqlStatement, databaseConfig);
+    };
+
+    isolated function externExecuteStatement(sql:ParameterizedQuery sqlStatement, DatabaseConfig? databaseConfig = ())
     returns string|Error = @java:Method {
+        name: "executeStatement",
         'class: "io.ballerina.lib.aws.redshiftdata.NativeClientAdaptor"
     } external;
 
