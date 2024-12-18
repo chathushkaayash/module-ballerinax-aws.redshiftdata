@@ -65,15 +65,14 @@ public class NativeClientAdaptor {
     }
 
     @SuppressWarnings("unchecked")
-    public static Object executeStatement(BObject bClient, BObject bSqlStatement, Object bDatabaseConfigObj) {
+    public static Object executeStatement(BObject bClient, BObject bSqlStatement, Object bDatabaseConfig) {
         try {
             RedshiftDataClient nativeClient = (RedshiftDataClient) bClient.getNativeData(Constants.NATIVE_CLIENT);
-            BMap<BString, Object> bDatabaseConfig = (BMap<BString, Object>) bDatabaseConfigObj;
             DatabaseConfig databaseConfig;
             if (bDatabaseConfig == null)
                 databaseConfig = (DatabaseConfig) bClient.getNativeData(Constants.NATIVE_DATABASE_CONFIG);
             else {
-                databaseConfig = new DatabaseConfig(bDatabaseConfig);
+                databaseConfig = new DatabaseConfig((BMap<BString, Object>) bDatabaseConfig);
             }
             ParameterizedQuery parameterizedQuery = new ParameterizedQuery(bSqlStatement);
             ExecuteStatementRequest.Builder requestBuilder = ExecuteStatementRequest.builder()
