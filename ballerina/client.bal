@@ -16,6 +16,7 @@
 //  
 
 import ballerina/jballerina.java;
+import ballerina/sql;
 
 public isolated client class Client {
 
@@ -32,12 +33,22 @@ public isolated client class Client {
         name: "init",
         'class: "io.ballerina.lib.aws.redshiftdata.NativeClientAdaptor"
     } external;
-        
+
+    # Executes the SQL query.
+    #
+    # + sqlStatement - The SQL statement to be executed
+    # + databaseConfig - The database configurations.
+    # + return - The statementId that can be used to retrieve the results or an error
+    remote function executeStatement(sql:ParameterizedQuery sqlStatement, DatabaseConfig? databaseConfig = ())
+    returns string|Error = @java:Method {
+        'class: "io.ballerina.lib.aws.redshiftdata.NativeClientAdaptor"
+    } external;
+
     # Closes the AWS Redshift Data API client.
     # ```ballerina
     # check redshift->close();
     # ```
-    # 
+    #
     # + return - A `redshiftdata:Error` if there is an error while closing the client resources or else nil
     remote function close() returns Error? = @java:Method {
         'class: "io.ballerina.lib.aws.redshiftdata.NativeClientAdaptor"

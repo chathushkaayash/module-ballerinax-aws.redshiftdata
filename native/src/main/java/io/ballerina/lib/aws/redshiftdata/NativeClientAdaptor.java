@@ -20,9 +20,11 @@ package io.ballerina.lib.aws.redshiftdata;
 
 import java.util.Objects;
 
+import io.ballerina.runtime.api.utils.StringUtils;
 import io.ballerina.runtime.api.values.*;
 import software.amazon.awssdk.auth.credentials.*;
 import software.amazon.awssdk.services.redshiftdata.RedshiftDataClient;
+import software.amazon.awssdk.services.redshiftdata.model.ExecuteStatementRequest;
 
 /**
  * Representation of {@link software.amazon.awssdk.services.redshiftdata.RedshiftDataClient} with
@@ -60,6 +62,36 @@ public class NativeClientAdaptor {
                     authConfig.sessionToken());
         } else {
             return AwsBasicCredentials.create(authConfig.accessKeyId(), authConfig.secretAccessKey());
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    public static Object executeStatement(BObject bClient, BObject bSqlStatement, Object bDatabaseConfigObj) {
+        try {
+            RedshiftDataClient nativeClient = (RedshiftDataClient) bClient.getNativeData(NATIVE_CLIENT);
+            BMap<BString, Object> bDatabaseConfig = (BMap<BString, Object>) bDatabaseConfigObj;
+            DatabaseConfig databaseConfig;
+            if (bDatabaseConfig == null)
+                databaseConfig = (DatabaseConfig) bClient.getNativeData(NATIVE_DATABASE_CONFIG);
+            else {
+                databaseConfig = new DatabaseConfig(bDatabaseConfig);
+            }
+            ParameterizedQuery parameterizedQuery = new ParameterizedQuery(bSqlStatement);
+            ExecuteStatementRequest.Builder requestBuilder = ExecuteStatementRequest.builder()
+                    .clusterIdentifier(databaseConfig.clusterId())
+                    .database(databaseConfig.databaseName())
+                    .dbUser(databaseConfig.databaseUser())
+                    .sql(parameterizedQuery.getQueryString());
+            // Set sql query parameters if available
+            if (parameterizedQuery.hasParameters())
+                requestBuilder.parameters(parameterizedQuery.getParameters());
+            ExecuteStatementRequest statementRequest = requestBuilder.build();
+            String statementId = nativeClient.executeStatement(statementRequest).id();
+            return StringUtils.fromString(statementId);
+        } catch (Exception e) {
+            String errorMsg = String.format("Error occurred while executing the statement: %s",
+                    e.getMessage());
+            return CommonUtils.createError(errorMsg, e);
         }
     }
 
