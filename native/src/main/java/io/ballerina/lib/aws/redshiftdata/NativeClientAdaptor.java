@@ -37,25 +37,19 @@ public class NativeClientAdaptor {
 
     public static Object init(BObject bClient, BMap<BString, Object> bConnectionConfig) {
         try {
-
             ConnectionConfig connectionConfig = new ConnectionConfig(bConnectionConfig);
             AwsCredentials credentials = getCredentials(connectionConfig.authConfig());
             AwsCredentialsProvider credentialsProvider = StaticCredentialsProvider.create(credentials);
-
             RedshiftDataClient nativeClient = RedshiftDataClient.builder()
                     .region(connectionConfig.region())
                     .credentialsProvider(credentialsProvider)
                     .build();
-
             bClient.addNativeData(NATIVE_CLIENT, nativeClient);
             bClient.addNativeData(NATIVE_DATABASE_CONFIG, connectionConfig.databaseConfig());
-
         } catch (Exception e) {
-
             String errorMsg = String.format("Error occurred while initializing the Redshift client: %s",
                     e.getMessage());
             return CommonUtils.createError(errorMsg, e);
-
         }
         return null;
     }
