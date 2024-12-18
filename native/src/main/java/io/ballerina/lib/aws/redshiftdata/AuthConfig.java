@@ -18,8 +18,8 @@
 
 package io.ballerina.lib.aws.redshiftdata;
 
-import io.ballerina.runtime.api.values.BString;
 import io.ballerina.runtime.api.values.BMap;
+import io.ballerina.runtime.api.values.BString;
 
 /**
  * {@code ConnectionConfig} represents the authentication configuration required

@@ -18,13 +18,15 @@
 
 package io.ballerina.lib.aws.redshiftdata;
 
-import java.util.Objects;
-
 import io.ballerina.runtime.api.utils.StringUtils;
-import io.ballerina.runtime.api.values.*;
+import io.ballerina.runtime.api.values.BMap;
+import io.ballerina.runtime.api.values.BObject;
+import io.ballerina.runtime.api.values.BString;
 import software.amazon.awssdk.auth.credentials.*;
 import software.amazon.awssdk.services.redshiftdata.RedshiftDataClient;
 import software.amazon.awssdk.services.redshiftdata.model.ExecuteStatementRequest;
+
+import java.util.Objects;
 
 /**
  * Representation of {@link software.amazon.awssdk.services.redshiftdata.RedshiftDataClient} with
