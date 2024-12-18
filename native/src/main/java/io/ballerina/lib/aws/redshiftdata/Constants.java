@@ -47,5 +47,4 @@ public interface Constants {
     // Constants Related to Parameterized Query
     BString QUERY_STRINGS = StringUtils.fromString("strings");
     BString QUERY_INSERTIONS = StringUtils.fromString("insertions");
-
 }

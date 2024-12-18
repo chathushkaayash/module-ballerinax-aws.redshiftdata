@@ -89,8 +89,10 @@ public class NativeClientAdaptor {
                 .dbUser(databaseConfig.databaseUser())
                 .sql(parameterizedQuery.getQueryString());
         // Set sql query parameters if available
-        if (parameterizedQuery.hasParameters())
+        if (parameterizedQuery.hasParameters()) {
             requestBuilder.parameters(parameterizedQuery.getParameters());
+        }
+
         ExecuteStatementRequest statementRequest = requestBuilder.build();
         Future future = env.markAsync();
         EXECUTOR_SERVICE.execute(() -> {
