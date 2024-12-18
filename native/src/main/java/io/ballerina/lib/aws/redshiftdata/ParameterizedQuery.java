@@ -94,7 +94,7 @@ public class ParameterizedQuery {
         for (int i = 0; i < strings.length; i++) {
             query.append(strings[i]);
             if (i < insertions.length) {
-                query.append(insertions[i]);
+                query.append("'").append(insertions[i]).append("'");
             }
         }
         return query.toString();
