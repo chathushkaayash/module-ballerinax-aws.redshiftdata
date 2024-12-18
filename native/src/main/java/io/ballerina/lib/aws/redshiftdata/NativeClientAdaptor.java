@@ -21,13 +21,10 @@ package io.ballerina.lib.aws.redshiftdata;
 import io.ballerina.runtime.api.Environment;
 import io.ballerina.runtime.api.Future;
 import io.ballerina.runtime.api.utils.StringUtils;
-import io.ballerina.runtime.api.values.BError;
-import io.ballerina.runtime.api.values.BMap;
-import io.ballerina.runtime.api.values.BObject;
-import io.ballerina.runtime.api.values.BString;
+import io.ballerina.runtime.api.values.*;
 import software.amazon.awssdk.auth.credentials.*;
 import software.amazon.awssdk.services.redshiftdata.RedshiftDataClient;
-import software.amazon.awssdk.services.redshiftdata.model.ExecuteStatementRequest;
+import software.amazon.awssdk.services.redshiftdata.model.*;
 
 import java.util.Objects;
 import java.util.concurrent.ExecutorService;
@@ -110,6 +107,47 @@ public class NativeClientAdaptor {
         return null;
     }
 
+    @SuppressWarnings("unchecked")
+    public static Object batchExecuteStatement(Environment env, BObject bClient, BArray bSqlStatementsArray,
+                                               Object bDatabaseConfig) {
+        RedshiftDataClient nativeClient = (RedshiftDataClient) bClient.getNativeData(Constants.NATIVE_CLIENT);
+        DatabaseConfig databaseConfig;
+        if (bDatabaseConfig == null)
+            databaseConfig = (DatabaseConfig) bClient.getNativeData(Constants.NATIVE_DATABASE_CONFIG);
+        else {
+            databaseConfig = new DatabaseConfig((BMap<BString, Object>) bDatabaseConfig);
+        }
+        String[] preparedQuery = new String[bSqlStatementsArray.size()];
+        for (int i = 0; i < bSqlStatementsArray.size(); i++) {
+            preparedQuery[i] = (new ParameterizedQuery((BObject) bSqlStatementsArray.get(i))).getPreparedQuery();
+        }
+        BatchExecuteStatementRequest batchExecuteStatementRequest = BatchExecuteStatementRequest.builder()
+                .clusterIdentifier(databaseConfig.clusterId())
+                .database(databaseConfig.databaseName())
+                .dbUser(databaseConfig.databaseUser())
+                .sqls(preparedQuery)
+                .build();
+        Future future = env.markAsync();
+        EXECUTOR_SERVICE.execute(() -> {
+            try {
+                String statementId = nativeClient.batchExecuteStatement(batchExecuteStatementRequest).id();
+                DescribeStatementResponse describeStatementResponse = getDescribeStatement(nativeClient, statementId,
+                        Constants.DEFAULT_TIMEOUT, Constants.DEFAULT_POLLING_INTERVAL);
+                String[] subStatementIds = describeStatementResponse.subStatements().stream()
+                        .map(SubStatementData::id)
+                        .toArray(String[]::new);
+                BArray bStatementIds = StringUtils.fromStringArray(subStatementIds);
+                future.complete(bStatementIds);
+            } catch (Exception e) {
+                String errorMsg = String.format("Error occurred while executing the batch statement: %s",
+                        e.getMessage());
+                BError bError = CommonUtils.createError(errorMsg, e);
+                future.complete(bError);
+            }
+        });
+        return null;
+    }
+
     public static Object close(BObject bClient) {
         RedshiftDataClient nativeClient = (RedshiftDataClient) bClient.getNativeData(Constants.NATIVE_CLIENT);
         try {
@@ -120,5 +158,35 @@ public class NativeClientAdaptor {
             return CommonUtils.createError(errorMsg, e);
         }
         return null;
+    }
+
+    // helper methods
+    private static DescribeStatementResponse getDescribeStatement(RedshiftDataClient nativeClient,
+                                                                  String statementId, long timeout, long pollInterval) {
+        long timeoutMillis = timeout * 1000; // convert seconds to milliseconds
+        long pollIntervalMillis = pollInterval * 1000; // convert seconds to milliseconds
+        long startTime = System.currentTimeMillis();
+        DescribeStatementRequest describeStatementRequest = DescribeStatementRequest.builder()
+                .id(statementId)
+                .build();
+        DescribeStatementResponse response;
+        while ((System.currentTimeMillis() - startTime) < timeoutMillis) {
+            response = nativeClient.describeStatement(describeStatementRequest);
+            switch (response.status()) {
+                case FINISHED:
+                    return response;
+                case FAILED:
+                    throw new RuntimeException("Statement execution failed");
+                case ABORTED:
+                    throw new RuntimeException("Statement execution aborted");
+                default:
+                    try {
+                        Thread.sleep(pollIntervalMillis);
+                    } catch (InterruptedException e) {
+                        Thread.currentThread().interrupt();
+                    }
+            }
+        }
+        throw new RuntimeException("Statement execution timed out");
     }
 }

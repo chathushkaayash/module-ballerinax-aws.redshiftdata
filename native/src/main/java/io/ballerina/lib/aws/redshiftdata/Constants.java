@@ -28,6 +28,8 @@ public interface Constants {
     // Constants Related to Native Client Adapter
     String NATIVE_CLIENT = "nativeClient";
     String NATIVE_DATABASE_CONFIG = "nativeDatabaseConfig";
+    long DEFAULT_TIMEOUT = 60L; // In seconds
+    long DEFAULT_POLLING_INTERVAL = 2L; // In seconds
 
     // Constants Related to Connection Config
     BString REGION = StringUtils.fromString("region");

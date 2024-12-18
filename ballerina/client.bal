@@ -44,6 +44,16 @@ public isolated client class Client {
         'class: "io.ballerina.lib.aws.redshiftdata.NativeClientAdaptor"
     } external;
 
+    # Executes the SQL queries in a batch.
+    #
+    # + sqlStatements - The SQL statements to be executed
+    # + databaseConfig - The database configurations.
+    # + return - The statementIds that can be used to retrieve the results or an error
+    remote function batchExecuteStatement(sql:ParameterizedQuery[] sqlStatements, DatabaseConfig? databaseConfig = ())
+    returns string[]|Error = @java:Method {
+        'class: "io.ballerina.lib.aws.redshiftdata.NativeClientAdaptor"
+    } external;
+
     # Closes the AWS Redshift Data API client.
     # ```ballerina
     # check redshift->close();
