@@ -33,9 +33,6 @@ import java.util.Objects;
  * utility methods to invoke as inter-op functions.
  */
 public class NativeClientAdaptor {
-    private static final String NATIVE_CLIENT = Constants.NATIVE_CLIENT;
-    private static final String NATIVE_DATABASE_CONFIG = Constants.NATIVE_DATABASE_CONFIG;
-
     private NativeClientAdaptor() {
     }
 
@@ -48,8 +45,8 @@ public class NativeClientAdaptor {
                     .region(connectionConfig.region())
                     .credentialsProvider(credentialsProvider)
                     .build();
-            bClient.addNativeData(NATIVE_CLIENT, nativeClient);
-            bClient.addNativeData(NATIVE_DATABASE_CONFIG, connectionConfig.databaseConfig());
+            bClient.addNativeData(Constants.NATIVE_CLIENT, nativeClient);
+            bClient.addNativeData(Constants.NATIVE_DATABASE_CONFIG, connectionConfig.databaseConfig());
         } catch (Exception e) {
             String errorMsg = String.format("Error occurred while initializing the Redshift client: %s",
                     e.getMessage());
@@ -70,11 +67,11 @@ public class NativeClientAdaptor {
     @SuppressWarnings("unchecked")
     public static Object executeStatement(BObject bClient, BObject bSqlStatement, Object bDatabaseConfigObj) {
         try {
-            RedshiftDataClient nativeClient = (RedshiftDataClient) bClient.getNativeData(NATIVE_CLIENT);
+            RedshiftDataClient nativeClient = (RedshiftDataClient) bClient.getNativeData(Constants.NATIVE_CLIENT);
             BMap<BString, Object> bDatabaseConfig = (BMap<BString, Object>) bDatabaseConfigObj;
             DatabaseConfig databaseConfig;
             if (bDatabaseConfig == null)
-                databaseConfig = (DatabaseConfig) bClient.getNativeData(NATIVE_DATABASE_CONFIG);
+                databaseConfig = (DatabaseConfig) bClient.getNativeData(Constants.NATIVE_DATABASE_CONFIG);
             else {
                 databaseConfig = new DatabaseConfig(bDatabaseConfig);
             }
@@ -98,7 +95,7 @@ public class NativeClientAdaptor {
     }
 
     public static Object close(BObject bClient) {
-        RedshiftDataClient nativeClient = (RedshiftDataClient) bClient.getNativeData(NATIVE_CLIENT);
+        RedshiftDataClient nativeClient = (RedshiftDataClient) bClient.getNativeData(Constants.NATIVE_CLIENT);
         try {
             nativeClient.close();
         } catch (Exception e) {
